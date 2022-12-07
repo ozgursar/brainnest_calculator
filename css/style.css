@@ -1,0 +1,90 @@
+:root {
+  --body-background: #fff;
+  --calculator-background: #1E1E1E;
+  --button-background: #FF9600;
+  --button-text: #fff;
+  --screen-background: #444;
+  --screen-text: #fff;
+  --operator-button-background: #777;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--body-background);
+  margin: 0;
+  padding: 0;
+  font-family: monospace;
+}
+
+.container {
+  background-color: var(--calculator-background);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.all-buttons-container {
+  display: flex;
+}
+
+#screen {
+  min-height: 40px;
+  background-color: var(--screen-background);
+  color: var(--screen-text);
+  box-shadow: inset 0 0 3px #000;
+  margin-bottom: 10px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 5px 12px;
+}
+
+.numbers-container {
+  width: 165px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+button {
+  all: unset;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  background-color: var(--button-background);
+  color: var(--button-text);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #DC8303;
+}
+
+.large {
+  width: 105px;
+}
+
+.operators-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.operators-container .btn, .utilities-container .btn{
+  background-color: var(--operator-button-background);
+}
+
+.utilities-container {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
+}
