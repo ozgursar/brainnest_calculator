@@ -1,106 +1,106 @@
-const screenData = {
-  displayed: [],
-  num1: 0,
-  num2: 0,
+// Init calculator data
+const calcData = {
+  displayArray: [],
+  numberDisplayed: 0,
+  numberInOperation: 0,
   selectedOperator: null,
-  calculated: 0
-}
-
-const add = (num1, num2) => num1+num2
-const subtract = (num1, num2) => num1-num2
-const multiply = (num1, num2) => num1*num2
-const divide = (num1, num2) => num1/num2
-const operate = (operator, num1, num2) => operator(num1, num2)
-const renderScreen = () => {
-  console.log(screenData)
-  if (screenData.displayed.length) {
-    screen.textContent = screenData.displayed.join('')
-  } else {
-    screen.textContent = screenData.calculated
+  endOfCalculation: false,
+  render() {
+    this.numberDisplayed = this.displayArray.length ? +this.displayArray.join('') : 0
+    screen.textContent = this.displayArray.length ? this.displayArray.join('') : 0
+    console.log(this)
   }
 }
-const clearData = () => {
-  screenData.displayed = []
-  screenData.num1 = 0
-  screenData.num2 = 0
-  screenData.selectedOperator = null,
-  screenData.calculated = 0
-}
+const allowedDigits = 9 //max digits that you can type on screen
 
+// Nodes and nodelists
 const screen = document.querySelector("#screen")
 const numbersContainer = document.querySelector(".numbers-container")
 const numberButtons = numbersContainer.querySelectorAll(".btn")
-numberButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    // No leading zeros
-    if (!(button.id==0 && screenData.displayed.length==0) && screenData.displayed.length<9) {
-      screenData.displayed.push(button.id)
-      renderScreen()
-    }
-  })
-})
-
-// Clear function
-const btnClear = document.querySelector("#clear")
-btnClear.addEventListener('click', () => {
-  clearData()
-  renderScreen()
-})
-
-// Backspace function
-const btnBackSpace = document.querySelector("#backspace")
-btnBackSpace.addEventListener('click', () => {
-  screenData.displayed.pop()
-  renderScreen()
-})
-
-// Operator buttons
 const operatorsContainer = document.querySelector(".operators-container")
 const operatorButtons = operatorsContainer.querySelectorAll(".btn.opr")
-operatorButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    switch (button.id) {
+const btnCalculate = document.querySelector("#calculate")
+const btnClear = document.querySelector("#clear")
+const btnBackspace = document.querySelector("#backspace")
+
+// Main operator functions
+const operate = (operator, num1, num2) => operator(num1, num2)
+const add = (num1, num2) => num1+num2
+const subtract = (num1, num2) => num1-num2
+const multiply = (num1, num2) => num1*num2
+const divide = (num1, num2) => {
+  if (num2 !== 0) {
+    return num1/num2
+  } else {
+    return num1 // Return first number if division by zero
+  }
+
+}
+
+// Event handlers
+const handleEnterDigit = (e) => {
+  if (calcData.endOfCalculation) {
+    calcData.endOfCalculation = false
+    calcData.displayArray = []
+  }
+  if (calcData.displayArray.length<allowedDigits) {
+    if ((e.target.id === '.') && calcData.displayArray.includes('.')) return
+    calcData.displayArray.push(e.target.id)
+    calcData.render()
+  }
+}
+
+const handleCalculate = () => {
+  let tempResult
+  if (calcData.numberInOperation && calcData.selectedOperator) {
+    tempResult=operate(calcData.selectedOperator, calcData.numberInOperation, calcData.numberDisplayed)
+    calcData.displayArray = (Number.isInteger(tempResult) ? tempResult.toString() : tempResult.toFixed(2)).split('')
+    calcData.selectedOperator = null
+    calcData.numberInOperation = 0
+    calcData.endOfCalculation = true
+    calcData.render()
+  }
+}
+
+const handleSelectOperator = (e) => {
+  if (calcData.displayArray.length) {
+    handleCalculate() // Chain calculations
+    calcData.numberInOperation = +calcData.displayArray.join('')
+    calcData.displayArray = []
+    switch (e.target.id) {
       case 'add':
-        screenData.selectedOperator = add
+        calcData.selectedOperator = add
         break
       case 'subtract':
-        screenData.selectedOperator = subtract
+        calcData.selectedOperator = subtract
         break
       case 'multiply':
-        screenData.selectedOperator = multiply
+        calcData.selectedOperator = multiply
         break
       case 'divide':
-        screenData.selectedOperator = divide
+        calcData.selectedOperator = divide
     }
-    if (screenData.displayed.length) {
-      screenData.num1 = +screenData.displayed.join('')
-      screenData.displayed = []
-    }
-  })
-})
-
-
-// Calculate function
-const btnCalculate = document.querySelector("#calculate")
-btnCalculate.addEventListener('click', () => {
-  let result
-  if (screenData.num1 && screenData.displayed.length && screenData.selectedOperator) {
-    screenData.num2 = +screenData.displayed.join('')
-    screenData.displayed = []
-    result=operate(screenData.selectedOperator,screenData.num1,screenData.num2)
-    // if result is float, limit with 2 decimals
-    if (Number.isInteger(result)) {
-      screenData.calculated = result
-    } else {
-      screenData.calculated = +result.toFixed(2)
-    }
-    // post calculation operations
-    screenData.selectedOperator = null
-    screenData.num1 = screenData.calculated
-    screenData.num2 = 0
-  } else {
-    screenData.calculated = +screenData.displayed.join('')
-    clearData()
   }
-  renderScreen()
-})
+}
+
+const handleClear = () => {
+  calcData.displayArray = []
+  calcData.numberDisplayed = 0
+  calcData.numberInOperation = 0
+  calcData.selectedOperator = null
+  calcData.endOfCalculation = false
+  calcData.render()
+  console.clear()
+}
+
+const handleBackspace = () => {
+  calcData.displayArray.pop()
+  calcData.render()
+}
+
+// Event listeners
+numberButtons.forEach((button) => button.addEventListener('click', handleEnterDigit))
+btnClear.addEventListener('click', handleClear)
+btnBackspace.addEventListener('click', handleBackspace)
+operatorButtons.forEach((button) => button.addEventListener('click', handleSelectOperator))
+btnCalculate.addEventListener('click', handleCalculate )
