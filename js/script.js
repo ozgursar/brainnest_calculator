@@ -1,12 +1,17 @@
 // Init calculator data
 const calcData = {
   displayArray: [],
-  numberDisplayed: 0,
   numberInOperation: 0,
   selectedOperator: null,
   endOfCalculation: false,
+  get numberDisplayed() {
+    if (this.displayArray.length) {
+      return +this.displayArray.join('')
+    } else {
+      return 0
+    }
+  },
   render() {
-    this.numberDisplayed = this.displayArray.length ? +this.displayArray.join('') : 0
     screen.textContent = this.displayArray.length ? this.displayArray.join('') : 0
     console.log(this)
   }
@@ -62,10 +67,11 @@ const handleCalculate = () => {
   }
 }
 
+// TODO: Change of operator during operation does not work ****
 const handleSelectOperator = (e) => {
   if (calcData.displayArray.length) {
     handleCalculate() // Chain calculations
-    calcData.numberInOperation = +calcData.displayArray.join('')
+    calcData.numberInOperation = calcData.numberDisplayed
     calcData.displayArray = []
     switch (e.target.id) {
       case 'add':
@@ -80,6 +86,7 @@ const handleSelectOperator = (e) => {
       case 'divide':
         calcData.selectedOperator = divide
     }
+    console.log(calcData)
   }
 }
 
