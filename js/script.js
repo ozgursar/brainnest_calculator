@@ -13,7 +13,9 @@ const calcData = {
   },
   render() {
     screen.textContent = this.displayArray.length ? this.displayArray.join('') : 0
-    console.log(this)
+    // Dynamically reduce font size to fit numbers into screen
+    this.displayArray.length>13 ? screen.classList.add('smaller-font') : screen.classList.remove('smaller-font')
+    //console.log(this)
   }
 }
 const allowedDigits = 9 //max digits that you can type on screen
@@ -37,42 +39,55 @@ const divide = (num1, num2) => {
   if (num2 !== 0) {
     return num1/num2
   } else {
-    return num1 // Return first number if division by zero
+    screen.textContent = "Division by 0"
+    return null
   }
-
 }
 
 // Event handlers
-const handleEnterDigit = (e) => {
+const handleEnterDigit = (e, numberFromKeyboard) => {
   if (calcData.endOfCalculation) {
     calcData.endOfCalculation = false
     calcData.displayArray = []
   }
   if (calcData.displayArray.length<allowedDigits) {
-    if ((e.target.id === '.') && calcData.displayArray.includes('.')) return
-    calcData.displayArray.push(e.target.id)
+    if (e instanceof PointerEvent) {
+      if (e.target.id === '.' && calcData.displayArray.includes('.')) return
+      calcData.displayArray.push(e.target.id)
+    }
+    if (e instanceof KeyboardEvent) {
+      if (numberFromKeyboard === '.' && calcData.displayArray.includes('.')) return
+      calcData.displayArray.push(numberFromKeyboard)
+    }
     calcData.render()
   }
 }
 
 const handleCalculate = () => {
-  let tempResult
+  let tempResult //null when div by zero
+  resetActiveColoredButtons()
   if (calcData.numberInOperation && calcData.selectedOperator) {
     tempResult=operate(calcData.selectedOperator, calcData.numberInOperation, calcData.numberDisplayed)
-    calcData.displayArray = (Number.isInteger(tempResult) ? tempResult.toString() : tempResult.toFixed(2)).split('')
+    if (typeof(tempResult) == 'number') {
+      calcData.displayArray = (Number.isInteger(tempResult) ? tempResult.toString() : tempResult.toFixed(2)).split('')
+    }
     calcData.selectedOperator = null
     calcData.numberInOperation = 0
     calcData.endOfCalculation = true
-    calcData.render()
+    if (tempResult !== null) calcData.render()
   }
 }
 
-// TODO: Change of operator during operation does not work ****
-const handleSelectOperator = (e) => {
+const handleSelectOperator = (e, operatorFromKeyboard) => {
+  // Chain calculation only once even if operator button clicked multiple times
   if (calcData.displayArray.length) {
-    handleCalculate() // Chain calculations
+    handleCalculate()
     calcData.numberInOperation = calcData.numberDisplayed
     calcData.displayArray = []
+  }
+  resetActiveColoredButtons()
+
+  if (e instanceof PointerEvent) {
     switch (e.target.id) {
       case 'add':
         calcData.selectedOperator = add
@@ -86,7 +101,26 @@ const handleSelectOperator = (e) => {
       case 'divide':
         calcData.selectedOperator = divide
     }
-    console.log(calcData)
+    // Change color of the selected operator
+    e.target.classList.add('active')
+  }
+
+  if (e instanceof KeyboardEvent) {
+    calcData.selectedOperator = operatorFromKeyboard
+    // Change color of the selected operator
+    switch (operatorFromKeyboard) {
+      case add:
+        document.querySelector('#add').classList.add('active')
+        break
+      case subtract:
+        document.querySelector('#subtract').classList.add('active')
+        break
+      case multiply:
+        document.querySelector('#multiply').classList.add('active')
+        break
+      case divide:
+        document.querySelector('#divide').classList.add('active')
+    }
   }
 }
 
@@ -96,13 +130,52 @@ const handleClear = () => {
   calcData.numberInOperation = 0
   calcData.selectedOperator = null
   calcData.endOfCalculation = false
+  resetActiveColoredButtons()
   calcData.render()
-  console.clear()
+  //console.clear()
 }
 
 const handleBackspace = () => {
   calcData.displayArray.pop()
   calcData.render()
+}
+
+const handleKeyDown = (e) => {
+  switch (e.key) {
+    case 'c':
+      handleClear()
+      break
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+    case '.':
+      handleEnterDigit(e, e.key)
+      break
+    case '+':
+      handleSelectOperator(e, add)
+      break
+    case '-':
+      handleSelectOperator(e, subtract)
+      break
+    case '*':
+      handleSelectOperator(e, multiply)
+      break
+    case '/':
+      handleSelectOperator(e, divide)
+      break
+    case 'Backspace':
+      handleBackspace()
+      break
+    case 'Enter':
+      handleCalculate()
+  }
 }
 
 // Event listeners
@@ -111,3 +184,11 @@ btnClear.addEventListener('click', handleClear)
 btnBackspace.addEventListener('click', handleBackspace)
 operatorButtons.forEach((button) => button.addEventListener('click', handleSelectOperator))
 btnCalculate.addEventListener('click', handleCalculate )
+
+// Keyboard support
+document.addEventListener("keydown", handleKeyDown);
+
+// Remove active class from all operator buttons
+function resetActiveColoredButtons() {
+  operatorButtons.forEach((button) => button.classList.remove('active'))
+}

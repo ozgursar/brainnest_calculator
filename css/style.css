@@ -1,11 +1,14 @@
 :root {
-  --body-background: #000;
+  --body-background: #fff;
   --calculator-background: #1E1E1E;
   --button-background: #FF9600;
+  --button-hover-background: #C47503;
   --button-text: #fff;
   --screen-background: #444;
   --screen-text: #fff;
   --operator-button-background: #777;
+  --operator-button-hover-background: #555;
+  --footer-text: #666;
 }
 
 body {
@@ -16,6 +19,14 @@ body {
   margin: 0;
   padding: 0;
   font-family: monospace;
+}
+
+header {
+  margin: 25px 0 5px 0;
+}
+
+h1 {
+  font-size: 21px;
 }
 
 .container {
@@ -41,15 +52,15 @@ body {
   padding: 5px 12px;
 }
 
+#screen.smaller-font {
+  font-size: 15px;
+}
+
 .numbers-container {
   width: 165px;
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-}
-
-button {
-  all: unset;
 }
 
 .btn {
@@ -59,17 +70,18 @@ button {
   width: 50px;
   height: 50px;
   border-radius: 5px;
-  background-color: var(--button-background);
+  background: var(--button-background);
+  border: 0;
   color: var(--button-text);
   font-size: 20px;
   cursor: pointer;
 }
 
 .btn:hover {
-  background-color: #DC8303;
+  background: var(--button-hover-background);
 }
 
-.large {
+.btn-large {
   width: 105px;
 }
 
@@ -80,11 +92,30 @@ button {
 }
 
 .operators-container .btn, .utilities-container .btn{
-  background-color: var(--operator-button-background);
+  background: var(--operator-button-background);
+}
+
+.operators-container .btn:hover, .utilities-container .btn:hover{
+  background: var(--operator-button-hover-background);
+}
+
+.active{
+  background: var(--operator-button-hover-background)!important;
 }
 
 .utilities-container {
   display: flex;
   gap: 5px;
   margin-bottom: 5px;
+}
+
+footer {
+  width: 220px;
+  margin: 10px 0;
+  color: var(--footer-text)
+}
+
+footer table {
+  padding: 0;
+  margin: 0;
 }
