@@ -29,6 +29,10 @@ h1 {
   font-size: 21px;
 }
 
+button {
+  all: unset
+}
+
 .container {
   background-color: var(--calculator-background);
   padding: 10px;
