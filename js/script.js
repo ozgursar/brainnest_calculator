@@ -53,12 +53,12 @@ const handleEnterDigit = (e, numberFromKeyboard) => {
   if (calcData.displayArray.length<allowedDigits) {
     if (e instanceof PointerEvent) {
       if (e.target.id === '.' && calcData.displayArray.includes('.')) return
-      if (e.target.id === '0' && calcData.displayArray[0] == '0') return
+      if (e.target.id === '0' && calcData.displayArray[0] == '0' && calcData.displayArray[1] != '.') return
       calcData.displayArray.push(e.target.id)
     }
     if (e instanceof KeyboardEvent) {
       if (numberFromKeyboard === '.' && calcData.displayArray.includes('.')) return
-      if (numberFromKeyboard === '0' && calcData.displayArray[0] == '0') return
+      if (numberFromKeyboard === '0' && calcData.displayArray[0] == '0' && calcData.displayArray[1] != '.') return
       calcData.displayArray.push(numberFromKeyboard)
     }
     calcData.render()
