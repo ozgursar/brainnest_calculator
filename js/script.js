@@ -126,7 +126,6 @@ const handleSelectOperator = (e, operatorFromKeyboard) => {
 
 const handleClear = () => {
   calcData.displayArray = []
-  calcData.numberDisplayed = 0
   calcData.numberInOperation = 0
   calcData.selectedOperator = null
   calcData.endOfCalculation = false
