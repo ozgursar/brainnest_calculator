@@ -69,7 +69,7 @@ const handleCalculate = () => {
   if (calcData.numberInOperation && calcData.selectedOperator) {
     tempResult=operate(calcData.selectedOperator, calcData.numberInOperation, calcData.numberDisplayed)
     if (typeof(tempResult) == 'number') {
-      calcData.displayArray = (Number.isInteger(tempResult) ? tempResult.toString() : tempResult.toFixed(2)).split('')
+      calcData.displayArray = (Number.isInteger(tempResult) ? tempResult.toString() : tempResult.toFixed(4)).split('')
     }
     calcData.selectedOperator = null
     calcData.numberInOperation = 0
